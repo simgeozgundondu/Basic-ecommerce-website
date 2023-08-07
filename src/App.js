@@ -4,6 +4,11 @@ import Category from "./Category";
 import ProductLıst from "./ProductLıst";
 import { Container, Row, Col } from "reactstrap";
 import alertify from "alertifyjs";
+import { Route } from "react-router-dom";
+import { Routes } from "react-router-dom";
+
+import NotFound from "./NotFound";
+import CartList from "./CartList";
 
 export default class App extends Component {
   state = { currentCategory: "", products: [], cart: [] };
@@ -36,12 +41,13 @@ export default class App extends Component {
       newCart.push({ product: product, quantity: 1 });
     }
     this.setState({ cart: newCart });
-    alertify.success(product.productName +" "+"added to cart!",2);
+    alertify.success(product.productName +" added to cart!", 2);
   };
-  
+
   deleteFromCart = (product) => {
     let newCart = this.state.cart.filter((c) => c.product.id !== product.id);
     this.setState({ cart: newCart });
+    alertify.error(product.productName +" removed from cart!", 2);
   };
 
   render() {
@@ -60,12 +66,30 @@ export default class App extends Component {
               />
             </Col>
             <Col xs="9">
-              <ProductLıst
-                products={this.state.products}
-                addToCart={this.addToCart}
-                currentCategory={this.state.currentCategory}
-                info={productInfo}
-              />
+              <Routes>
+                <Route
+                  exact
+                  path="/"
+                  element={
+                    <ProductLıst
+                      products={this.state.products}
+                      addToCart={this.addToCart}
+                      currentCategory={this.state.currentCategory}
+                      info={productInfo}
+                    />
+                  }
+                />
+                <Route
+                  path="/cart"
+                  element={
+                    <CartList
+                      cart={this.state.cart}
+                      deleteFromCart={this.deleteFromCart}
+                    />
+                  }
+                />
+                <Route path="*" element={<NotFound />}></Route>
+              </Routes>
             </Col>
           </Row>
         </Container>
@@ -73,7 +97,3 @@ export default class App extends Component {
     );
   }
 }
-
-
-
-
